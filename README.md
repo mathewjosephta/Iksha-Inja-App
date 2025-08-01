@@ -47,42 +47,19 @@ For Software:
 
 <img width="3188" height="1202" alt="frame (3)" src="assets/photo2.jpg" />
 
+<img width="3188" height="1202" alt="frame (3)" src="assets/photo3.jpg" />
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
-
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
+![Workflow](assets/Workflow.png)
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
+[▶️ Click to watch the demo](assets/Video%20recording.mp4)
 
-# Additional Demos
-[Add any extra demo materials/links]
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Mathew Joseph T A: Development
+- Daniel Joshy : Idea and Design
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
