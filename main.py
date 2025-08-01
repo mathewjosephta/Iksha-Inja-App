@@ -7,12 +7,17 @@ mp_hands = mp.solutions.hands
 mp_face = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
 
-hands = mp_hands.Hands(static_image_mode=False,
-                       max_num_hands=2,
-                       min_detection_confidence=0.8,
-                       min_tracking_confidence=0.8)
+hands = mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=2,
+    min_detection_confidence=0.8,
+    min_tracking_confidence=0.8
+)
 
-face_mesh = mp_face.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+face_mesh = mp_face.FaceMesh(
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5
+)
 
 cap = cv2.VideoCapture(0)
 drawing = False
@@ -37,27 +42,36 @@ while cap.isOpened():
     gesture_msg = ""
 
     # Improved hand detection
-    if hand_results.multi_hand_landmarks and hand_results.multi_handedness:
-        # Count Left & Right hands separately
-        hand_labels = [hand.classification[0].label for hand in hand_results.multi_handedness]
+    fingers_up = 0
+    left_detected = False
+    right_detected = False
 
-        if "Left" in hand_labels and "Right" in hand_labels:
-            cv2.putText(frame, "👋 Two Hands Detected - Exiting...", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    if hand_results.multi_hand_landmarks and hand_results.multi_handedness:
+        for i, hand_landmark in enumerate(hand_results.multi_hand_landmarks):
+            label = hand_results.multi_handedness[i].classification[0].label
+            if label == "Left":
+                left_detected = True
+            elif label == "Right":
+                right_detected = True
+
+            mp_drawing.draw_landmarks(frame, hand_landmark, mp_hands.HAND_CONNECTIONS)
+
+            # Finger count logic (only for the first hand)
+            if i == 0:
+                tips_ids = [8, 12, 16, 20]
+                for idx in tips_ids:
+                    if hand_landmark.landmark[idx].y < hand_landmark.landmark[idx - 2].y:
+                        fingers_up += 1
+
+        # Check quit condition
+        if left_detected and right_detected:
+            cv2.putText(frame, "👋 Two Hands Detected - Quitting...", (20, 40),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             cv2.imshow("Eksha Inna Varakum 🎨", np.hstack((frame, canvas)))
             cv2.waitKey(1500)
             break
 
-        # Process first detected hand
-        hand_landmarks = hand_results.multi_hand_landmarks[0]
-        mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-
-        # Finger count logic
-        tips_ids = [8, 12, 16, 20]
-        fingers_up = 0
-        for idx in tips_ids:
-            if hand_landmarks.landmark[idx].y < hand_landmarks.landmark[idx - 2].y:
-                fingers_up += 1
-
+        # Drawing condition
         if fingers_up >= 3:
             drawing = True
             gesture_msg = "✍️ Drawing Active"
@@ -85,13 +99,14 @@ while cap.isOpened():
 
     # Status message
     if gesture_msg:
-        cv2.putText(frame, gesture_msg, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 150, 255), 2)
+        cv2.putText(frame, gesture_msg, (10, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 150, 255), 2)
 
     # Show combined frame
     combined = np.hstack((frame, canvas))
     cv2.imshow("Eksha Inna Varakum 🎨", combined)
 
-    # Press 'q' to quit
+    # Press 'q' to quit manually
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
